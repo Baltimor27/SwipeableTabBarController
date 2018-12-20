@@ -171,6 +171,19 @@ extension SwipeInteractor: UIGestureRecognizerDelegate {
     func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         if gestureRecognizer == panRecognizer {
             if let point = panRecognizer?.translation(in: panRecognizer?.view?.superview) {
+                if let collectionView = otherGestureRecognizer.view as? UICollectionView {
+                    if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+                        if flowLayout.scrollDirection == .horizontal{
+                            print(point.x,collectionView.contentOffset.x)
+                            if point.x>0{
+                                return collectionView.contentOffset.x<10
+                            }else{
+                                let maxOffset = collectionView.contentSize.width-collectionView.frame.width
+                                return maxOffset-collectionView.contentOffset.x<10
+                            }
+                        }
+                    }
+                }
                 return abs(point.x) < InteractionConstants.xTranslationForRecognition
             }
         }
