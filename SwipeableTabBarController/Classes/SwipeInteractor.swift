@@ -13,6 +13,7 @@ import UIKit
 class SwipeInteractor: UIPercentDrivenInteractiveTransition {
     
     // MARK: - Private
+    private var oldViewController: UIViewController?
     private var viewController: UIViewController!
     private var rightToLeftSwipe = false
     private var shouldCompleteTransition = false
@@ -77,7 +78,7 @@ class SwipeInteractor: UIPercentDrivenInteractiveTransition {
     
         switch recognizer.state {
         case .began:
-
+            oldViewController = viewController
             if shouldSuspendInteraction(yTranslation: translation.y, yVelocity: velocity.y) {
                 interactionInProgress = false
                 return
@@ -130,6 +131,9 @@ class SwipeInteractor: UIPercentDrivenInteractiveTransition {
                 
                 if !shouldCompleteTransition || recognizer.state == .cancelled {
                     cancel()
+                    if let oldViewController = oldViewController{
+                        wireTo(viewController: oldViewController)
+                    }
                 } else {
                     // Avoid launching a new transaction while the previous one is finishing.
                     recognizer.isEnabled = false
@@ -174,7 +178,6 @@ extension SwipeInteractor: UIGestureRecognizerDelegate {
                 if let collectionView = otherGestureRecognizer.view as? UICollectionView {
                     if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
                         if flowLayout.scrollDirection == .horizontal{
-                            print(point.x,collectionView.contentOffset.x)
                             if point.x>0{
                                 return collectionView.contentOffset.x<10
                             }else{
