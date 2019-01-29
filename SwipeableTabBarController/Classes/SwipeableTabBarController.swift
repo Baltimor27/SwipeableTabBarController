@@ -148,3 +148,9 @@ extension SwipeableTabBarController: UITabBarControllerDelegate {
         return true
     }
 }
+
+extension SwipeableTabBarController{
+    open func canSelect()->Bool{
+        return !isTransitioning && !swipeInteractor.interactionInProgress
+    }
+}
