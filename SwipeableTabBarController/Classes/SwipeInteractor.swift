@@ -35,6 +35,7 @@ class SwipeInteractor: UIPercentDrivenInteractiveTransition {
     // MARK: - Public
     var isDiagonalSwipeEnabled = false
     var interactionInProgress = false
+    var isVelocityCheckSwipeEnabled = false
     
     typealias Closure = (() -> ())
     var onfinishTransition: Closure?
@@ -79,7 +80,7 @@ class SwipeInteractor: UIPercentDrivenInteractiveTransition {
         switch recognizer.state {
         case .began:
             oldViewController = viewController
-            if shouldSuspendInteraction(yTranslation: translation.y, yVelocity: velocity.y) {
+            if shouldSuspendInteraction(yTranslation: translation.y, xTransition: translation.x, yVelocity: velocity.y) {
                 interactionInProgress = false
                 return
             }
@@ -155,15 +156,19 @@ class SwipeInteractor: UIPercentDrivenInteractiveTransition {
     ///
     /// - Parameters:
     ///   - yTranslation: gesture translation on the Y-axis.
+    ///   - xTranslation: gesture translation on the X-axis.
     ///   - yVelocity: gesture velocity on the Y-axis.
     /// - Returns: boolean determing wether the interaction should take place or not.
-    private func shouldSuspendInteraction(yTranslation: CGFloat, yVelocity: CGFloat) -> Bool {
+    private func shouldSuspendInteraction(yTranslation: CGFloat, xTransition: CGFloat, yVelocity: CGFloat) -> Bool {
         if !isDiagonalSwipeEnabled {
             // Cancel interaction if the movement is on the Y axis.
             let isTranslatingOnYAxis = abs(yTranslation) > InteractionConstants.yTranslationForSuspend
-            let hasVelocityOnYAxis = abs(yVelocity) > InteractionConstants.yVelocityForSuspend
-            
-            return isTranslatingOnYAxis || hasVelocityOnYAxis
+            if isVelocityCheckSwipeEnabled {
+                let hasVelocityOnYAxis = abs(yVelocity) > InteractionConstants.yVelocityForSuspend
+                return isTranslatingOnYAxis || hasVelocityOnYAxis
+            } else {
+                return isTranslatingOnYAxis || abs(xTransition) < abs(yTranslation)
+            }
         }
         return false
     }
