@@ -33,6 +33,11 @@ open class SwipeableTabBarController: UITabBarController {
     }
 
     private func setup() {
+        swipeAnimatedTransitioning?.interactionIsInProgress = {
+            [weak self] in
+            
+            return self?.swipeInteractor.interactionInProgress ?? false
+        }
         // Set the closure for finishing the transition
         swipeInteractor.onfinishTransition = { [unowned self] in
             if let controllers = self.viewControllers, let selectedController = controllers[safe: self.selectedIndex] {
@@ -150,7 +155,11 @@ extension SwipeableTabBarController: UITabBarControllerDelegate {
 }
 
 extension SwipeableTabBarController{
-    open func canSelect()->Bool{
-        return !isTransitioning && !swipeInteractor.interactionInProgress
+    open func canSelect() -> Bool {
+        let canSelect = !isTransitioning && !swipeInteractor.interactionInProgress
+        if canSelect {
+            currentAnimatedTransitioningType = tapAnimatedTransitioning
+        }
+        return canSelect
     }
 }

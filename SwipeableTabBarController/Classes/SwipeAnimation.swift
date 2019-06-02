@@ -21,6 +21,7 @@ class SwipeAnimation: NSObject, SwipeTransitioningProtocol {
     var fromLeft = false
     var animationType: SwipeAnimationTypeProtocol = SwipeAnimationType.sideBySide
     var transitionStarted = false
+    var interactionIsInProgress: (() -> (Bool))?
 
     /// Init with injectable parameters
     ///
@@ -62,6 +63,15 @@ class SwipeAnimation: NSObject, SwipeTransitioningProtocol {
         let containerView = transitionContext.containerView
         animationType.addTo(containerView: containerView, fromView: fromView, toView: toView)
         animationType.prepare(fromView: fromView, toView: toView, direction: fromLeft)
+        
+        if let interactionIsInProgress = interactionIsInProgress {
+            if !interactionIsInProgress() {
+                self.finishedTransition(fromView: fromView,
+                                        toView: toView,
+                                        in: transitionContext)
+                return
+            }
+        }
     
         UIView.animate(withDuration: duration,
                        delay: 0.0,

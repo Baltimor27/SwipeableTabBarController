@@ -19,4 +19,6 @@ public protocol SwipeTransitioningProtocol: UIViewControllerAnimatedTransitionin
 
     /// Indicates if the transition has started.
     var transitionStarted: Bool { get set }
+    
+    var interactionIsInProgress: (() -> (Bool))? { get set }
 }
