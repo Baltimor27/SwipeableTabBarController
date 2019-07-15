@@ -35,7 +35,7 @@ class SwipeInteractor: UIPercentDrivenInteractiveTransition {
     // MARK: - Public
     var isDiagonalSwipeEnabled = false
     var interactionInProgress = false
-    var isVelocityCheckSwipeEnabled = false
+    var isVelocityCheckSwipeEnabled = true
     
     typealias Closure = (() -> ())
     var onfinishTransition: Closure?

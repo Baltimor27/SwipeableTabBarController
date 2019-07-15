@@ -119,6 +119,10 @@ open class SwipeableTabBarController: UITabBarController {
         swipeInteractor.isDiagonalSwipeEnabled = enabled
     }
 
+    open func setVelocityCheckSwipe(enabled: Bool) {
+        swipeInteractor.isVelocityCheckSwipeEnabled = enabled
+    }
+    
     /// Enables/Disables swipes on the tabbar controller.
     open var isSwipeEnabled = true {
         didSet { swipeInteractor.isEnabled = isSwipeEnabled }
