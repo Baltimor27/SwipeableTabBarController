@@ -23,7 +23,7 @@ class SwipeInteractor: UIPercentDrivenInteractiveTransition {
     fileprivate var panRecognizer: UIPanGestureRecognizer?
     fileprivate struct InteractionConstants {
         static let yTranslationForSuspend: CGFloat = 5.0
-        static let yVelocityForSuspend: CGFloat = 100.0
+        static let yVelocityForSuspend: CGFloat = 150.0
         static let xVelocityForComplete: CGFloat = 200.0
         static let xTranslationForRecognition: CGFloat = 5.0
     }
@@ -35,7 +35,6 @@ class SwipeInteractor: UIPercentDrivenInteractiveTransition {
     // MARK: - Public
     var isDiagonalSwipeEnabled = false
     var interactionInProgress = false
-    var isVelocityCheckSwipeEnabled = true
     
     typealias Closure = (() -> ())
     var onfinishTransition: Closure?
@@ -162,13 +161,9 @@ class SwipeInteractor: UIPercentDrivenInteractiveTransition {
     private func shouldSuspendInteraction(yTranslation: CGFloat, xTransition: CGFloat, yVelocity: CGFloat) -> Bool {
         if !isDiagonalSwipeEnabled {
             // Cancel interaction if the movement is on the Y axis.
-            let isTranslatingOnYAxis = abs(yTranslation) > InteractionConstants.yTranslationForSuspend
-            if isVelocityCheckSwipeEnabled {
-                let hasVelocityOnYAxis = abs(yVelocity) > InteractionConstants.yVelocityForSuspend
-                return isTranslatingOnYAxis || hasVelocityOnYAxis
-            } else {
-                return isTranslatingOnYAxis || abs(xTransition) < abs(yTranslation)
-            }
+            let isTranslatingOnYAxis = abs(yTranslation) > InteractionConstants.yTranslationForSuspend || abs(xTransition) < abs(yTranslation)
+            let hasVelocityOnYAxis = abs(yVelocity) > InteractionConstants.yVelocityForSuspend
+            return isTranslatingOnYAxis || hasVelocityOnYAxis
         }
         return false
     }
